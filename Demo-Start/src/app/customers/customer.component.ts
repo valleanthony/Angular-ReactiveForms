@@ -6,6 +6,7 @@ import {
   NgForm,
   Validators,
   ValidatorFn,
+  FormArray,
 } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { Customer } from './customer';
@@ -47,6 +48,10 @@ export class CustomerComponent implements OnInit {
   customer = new Customer();
   emailMessage: string;
 
+  get addresses(): FormArray {
+    return <FormArray>this.customerForm.get('addresses');
+  }
+
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
@@ -65,11 +70,7 @@ export class CustomerComponent implements OnInit {
       rating: [null, ratingRange(1, 5)],
       sendCatalog: true,
       addressType: 'home',
-      street1: '',
-      street2: '',
-      city: '',
-      state: '',
-      zip: '',
+      addreses: this.fb.array([this.buildAdress()]),
     });
 
     this.customerForm
@@ -98,6 +99,20 @@ export class CustomerComponent implements OnInit {
   save(customerForm: NgForm): void {
     console.log(this.customerForm.value);
     console.log('Saved: ' + JSON.stringify(customerForm.value));
+  }
+
+  buildAdress(): FormGroup {
+    return this.fb.group({
+      street1: '',
+      street2: '',
+      city: '',
+      state: '',
+      zip: '',
+    });
+  }
+
+  addAddress(): void {
+    this.addresses.push(this.buildAdress());
   }
 
   notifyMe(notifyVia) {
